@@ -25,7 +25,8 @@
 
 ### 📸 效果预览
 
-![预览图待补充]
+![移动界面](https://github.com/user-attachments/assets/42d0c767-92ad-4707-8c6a-f67d3fa92bf3)
+![深浅适配](https://github.com/user-attachments/assets/ea8ad2e9-266d-4275-b18d-4dfca667dec2)
 
 ### 📌 开源协议
 
