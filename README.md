@@ -25,10 +25,11 @@
 ### 📸 效果预览
 
 <p align="center">
-  
-![1](https://github.com/user-attachments/assets/78d71d7f-34be-4cfc-b7e4-38ff835b7745)
-![2](https://github.com/user-attachments/assets/56009d40-842e-4f07-bc96-9f1233971544)
+  <img src="https://github.com/user-attachments/assets/78d71d7f-34be-4cfc-b7e4-38ff835b7745" alt="预览图1" style="width:80%;">
+</p>
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/56009d40-842e-4f07-bc96-9f1233971544" alt="预览图2" style="width:80%;">
 </p>
 
 ### 🛠️ 技术栈
