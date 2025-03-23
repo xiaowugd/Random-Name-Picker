@@ -1,0 +1,29 @@
+## English Introduction
+
+This is an original, easy-to-use, and beautifully designed web-based random name picker with smooth interaction, suitable for various occasions.
+
+### 🚀 Features
+
+- 🌗 **Automatic Dark Mode**: Automatically switches themes based on the system setting, enhancing visual comfort.
+- 📑 **Group Management**: Quickly create, edit, and delete groups for easy list management.
+- ✨ **Dynamic Animations**: Smooth and natural random name animations enhance user experience.
+- 🎛️ **Dual Modes**: Supports both automatic random selection and manual stop.
+- 💾 **Local Storage**: No installation needed; data is securely stored locally.
+- 💻📱 **Responsive Design**: Perfectly adapts to desktops, tablets, and smartphones with a flexible, attractive layout.
+
+### 🛠️ Tech Stack
+
+- HTML, CSS, JavaScript
+- CSS Variables for flexible theme switching
+- CSS Animations and transitions for enhanced interactions
+
+### 📸 Preview
+
+![Preview Image Coming Soon]
+
+### 📌 License
+
+This project is open-sourced under the MIT License.
+
+Feel free to Star🌟, open Issues, and submit PRs! 🚀
+
