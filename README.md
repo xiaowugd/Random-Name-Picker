@@ -1,6 +1,6 @@
 # 🎲 网页随机点名工具 | Web-based Random Name Picker
 
-[中文](#中文介绍) | [English](#english-introduction)
+[中文](#README.md) | [English](#English-introduction)
 
 ---
 
