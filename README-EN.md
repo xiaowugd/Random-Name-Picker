@@ -1,3 +1,17 @@
+<p align="left">
+  &nbsp; English | <a href="README.md">中文</a> &nbsp;
+</p>
+
+<h3 align="center">Simple and Elegant Web-based Random Name Picker</h3>
+
+<p align="center">
+  A sleek and user-friendly tool featuring smooth interaction, group management, and automatic dark mode.
+</p>
+
+</div>
+
+---
+
 ## 🧭 English Introduction
 
 ### 🚀 Features
