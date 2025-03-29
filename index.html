@@ -1,111 +1,104 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <title>随机点名</title>
+  <meta charset="UTF-8">
+  <title>随机点名 / Random Name Picker</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    :root {
-      --bg-color: #fff;
-      --text-color: #000;
-      --card-bg: #f9f9f9;
-      --border-color: #ccc;
-      --input-bg: #fff;
-      --primary-color: #2d8cf0;
-      --secondary-color: #666;
-      --danger-color: #999;
-      --overlay-bg: rgba(0, 0, 0, 0.8);
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg-color: #1a1a1a;
-        --text-color: #f2f2f2;
-        --card-bg: #2a2a2a;
-        --border-color: #444;
-        --input-bg: #333;
-        --primary-color: #3399ff;
-        --secondary-color: #aaa;
-        --danger-color: #888;
-        --overlay-bg: rgba(0, 0, 0, 0.8);
-      }
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Helvetica Neue", Arial, sans-serif; transition: background 0.2s, color 0.2s, border-color 0.2s; }
-    body { background: var(--bg-color); color: var(--text-color); min-height: 100vh; display: flex; flex-direction: column; padding: 20px; opacity: 0; animation: fadeIn 0.4s ease forwards; }
-    @keyframes fadeIn { to { opacity: 1; } }
-    .container { flex: 1; margin: 0 auto; max-width: 1200px; width: 100%; border: 1px solid var(--border-color); border-radius: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); background: var(--card-bg); overflow: hidden; display: flex; flex-direction: column; }
-    .header { padding: 15px; border-bottom: 1px solid var(--border-color); text-align: center; font-size: 1.3rem; font-weight: 600; }
-    .main { flex: 1; display: flex; flex-direction: row; }
-    @media (max-width: 768px) { .main { flex-direction: column; } }
-    .left-panel { width: 320px; flex-shrink: 0; border-right: 1px solid var(--border-color); padding: 20px; background: var(--card-bg); display: flex; flex-direction: column; gap: 20px; }
-    @media (max-width: 768px) { .left-panel { width: 100%; border-right: none; border-bottom: 1px solid var(--border-color); } }
-    .group-section, .member-section { display: flex; flex-direction: column; gap: 10px; }
-    .group-section h2, .member-section h2 { font-size: 1rem; font-weight: 600; margin-bottom: 4px; }
-    .group-controls, .member-input-row { display: flex; gap: 8px; flex-wrap: wrap; }
-    select, input, button { outline: none; border: none; border-radius: 8px; padding: 8px 12px; font-size: 1rem; cursor: pointer; }
-    select { background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-color); flex: 1; }
-    .btn { background: var(--primary-color); color: #fff; transition: transform 0.1s; }
-    .btn:hover { background: var(--secondary-color); transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-    .danger { background: var(--danger-color) !important; }
-    .member-list { display: flex; flex-direction: column; gap: 6px; max-height: 450px; overflow-y: auto; }
-    .member-item { background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 6px; padding: 6px 10px; font-size: 0.95rem; color: var(--text-color); display: flex; align-items: center; justify-content: space-between; }
-    .member-item button { background: var(--secondary-color); color: var(--text-color); border-radius: 6px; padding: 4px 8px; font-size: 0.8rem; transition: transform 0.1s; }
-    .member-item button:hover { transform: scale(1.05); }
-    .right-panel { flex: 1; padding: 20px; background: var(--card-bg); display: flex; flex-direction: column; gap: 20px; }
-    .display-area { flex: 1; border: 1px solid var(--border-color); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; background: var(--input-bg); color: var(--text-color); min-height: 60px; padding: 10px; text-align: center; }
-    .fade-text { animation: fadeInText 0.15s ease; }
-    @keyframes fadeInText { from { opacity: 0; } to { opacity: 1; } }
-    .control-options { display: flex; align-items: center; gap: 10px; }
-    .control-options input { width: 16px; height: 16px; }
-    .control-options label { font-size: 0.9rem; color: var(--secondary-color); }
-    .control-buttons { display: flex; gap: 10px; }
-    .control-buttons button { flex: 1; font-size: 1.1rem; border-radius: 8px; border: none; padding: 10px 0; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s, background 0.2s; color: #fff; }
-    .control-buttons button:hover { transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-    .start-btn { background: var(--primary-color); }
-    .stop-btn { background: var(--secondary-color); }
-    .stop-btn:disabled { background: var(--primary-color); cursor: not-allowed; box-shadow: none; transform: none; }
-    .final-animate { animation: fadeInUp 0.3s ease; }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--overlay-bg); backdrop-filter: blur(0px); transition: backdrop-filter 0.5s ease, background 0.5s ease; display: none; align-items: center; justify-content: center; z-index: 999; }
-    .overlay.show { display: flex; backdrop-filter: blur(8px); }
-    .overlay-content { background: #222; color: #fff; border-radius: 16px; padding: 40px 60px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); text-align: center; animation: scaleUp 0.3s ease forwards; }
-    @keyframes scaleUp { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-    .overlay-content h3 { font-size: 2rem; margin-bottom: 20px; font-weight: 500; }
-    .overlay-content button { background: var(--primary-color); color: #fff; border: none; border-radius: 8px; padding: 10px 20px; font-size: 1rem; cursor: pointer; transition: transform 0.15s, background 0.2s; }
-    .overlay-content button:hover { transform: translateY(-2px); background: var(--secondary-color); }
+:root {
+  --bg-color:#f1f1f1; --text-color:#2f2f2f; --card-bg:#fff; --border-color:#ccc; --input-bg:#fff;
+  --primary-color:#2d8cf0; --secondary-color:#666; --danger-color:#e53935; --overlay-bg:rgba(0,0,0,0.7);
+}
+@media(prefers-color-scheme:dark){
+  :root {
+    --bg-color:#1a1a1a;--text-color:#f2f2f2;--card-bg:#2a2a2a;--border-color:#444;--input-bg:#333;
+    --primary-color:#3399ff;--secondary-color:#aaa;--danger-color:#f56c6c;--overlay-bg:rgba(0,0,0,0.7);
+  }
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Helvetica Neue",Arial,sans-serif;transition:background .2s,color .2s,border-color .2s}
+body{background:var(--bg-color);color:var(--text-color);display:flex;flex-direction:column;padding:20px;min-height:100vh;opacity:0;animation:fadeIn .4s ease forwards}
+@keyframes fadeIn{to{opacity:1}}
+.container{flex:1;margin:0 auto;max-width:1200px;width:100%;border:1px solid var(--border-color);border-radius:14px;background:var(--card-bg);box-shadow:0 2px 10px rgba(0,0,0,.05);display:flex;flex-direction:column;overflow:hidden;position:relative}
+#langToggle{position:absolute;top:12px;right:12px;z-index:999;background:var(--secondary-color);border:none;color:#fff;border-radius:14px;padding:6px 10px;cursor:pointer;font-size:.95rem;transition:transform .2s,box-shadow .2s}
+#langToggle:hover{transform:translateY(-1px);box-shadow:0 4px 8px rgba(0,0,0,.1)}
+.header{padding:16px;border-bottom:1px solid var(--border-color);text-align:center;font-size:1.2rem;font-weight:500}
+.main{flex:1;display:flex}
+@media(max-width:768px){.main{flex-direction:column}}
+.left-panel{width:320px;flex-shrink:0;padding:20px;border-right:1px solid var(--border-color);display:flex;flex-direction:column;gap:20px;background:var(--card-bg)}
+@media(max-width:768px){.left-panel{width:100%;border-right:none;border-bottom:1px solid var(--border-color)}}
+.right-panel{flex:1;padding:20px;display:flex;flex-direction:column;gap:20px;background:var(--card-bg)}
+.section{display:flex;flex-direction:column;gap:10px}
+.flex-row{display:flex;gap:8px;flex-wrap:wrap}
+button,select,input{outline:none;border-radius:14px;padding:8px 12px;font-size:1rem;cursor:pointer;border:1px solid var(--border-color)}
+select,input{background:var(--input-bg)}
+.btn{background:var(--secondary-color);color:#fff;border:none;transition:background .2s,transform .2s,box-shadow .2s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 4px 8px rgba(0,0,0,.1)}
+.danger{background:var(--danger-color)!important}
+.member-list{display:flex;flex-direction:column;gap:6px;max-height:400px;overflow-y:auto}
+.member-item{background:var(--input-bg);border:1px solid var(--border-color);border-radius:14px;padding:6px 10px;font-size:.95rem;display:flex;align-items:center;justify-content:space-between;transition:box-shadow .2s,transform .2s}
+.member-item:hover{transform:translateY(-2px);box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.member-item button{background:var(--secondary-color);color:#fff;border:none;border-radius:8px;padding:4px 8px;font-size:.8rem;transition:background .2s,transform .2s}
+.member-item button:hover{background:var(--primary-color);transform:translateY(-1px)}
+.display-area{flex:1;border:1px solid var(--border-color);border-radius:14px;background:var(--input-bg);min-height:60px;padding:10px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;text-align:center;transition:box-shadow .2s}
+.display-area:hover{box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.fade-text{animation:fadeInText .15s ease}
+@keyframes fadeInText{from{opacity:0}to{opacity:1}}
+.control-options{display:flex;align-items:center;gap:12px}
+.control-options input{width:16px;height:16px}
+.control-options label{font-size:.9rem;color:var(--secondary-color)}
+.control-buttons{display:flex;gap:12px}
+.control-buttons button{flex:1;font-size:1rem;padding:10px 0;color:#fff;border:none;border-radius:14px;transition:transform .2s,box-shadow .2s,background .2s}
+.control-buttons button:hover{transform:translateY(-1px);box-shadow:0 4px 8px rgba(0,0,0,.1)}
+#startBtn{background:var(--primary-color)}
+#stopBtn{background:var(--secondary-color)}
+#stopBtn:disabled{background:var(--danger-color);cursor:not-allowed;box-shadow:none;transform:none}
+.final-animate{animation:fadeInUp .3s ease}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:var(--overlay-bg);backdrop-filter:blur(0);display:none;align-items:center;justify-content:center;z-index:999;transition:.4s}
+.overlay.show{display:flex;backdrop-filter:blur(6px)}
+.overlay-content{background:#222;color:#fff;border-radius:14px;padding:30px 50px;box-shadow:0 4px 12px rgba(0,0,0,.5);text-align:center;animation:scaleUp .3s ease forwards}
+@keyframes scaleUp{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+.overlay-content h3{font-size:1.6rem;margin-bottom:20px}
+.overlay-content .btn:hover{background:var(--primary-color);transform:translateY(-2px)}
+#importFile{display:none}
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="header">随机点名</div>
+    <button id="langToggle"></button>
+    <div class="header" id="headerTitle"></div>
     <div class="main">
       <div class="left-panel">
-        <div class="group-section">
-          <h2>分组管理</h2>
-          <div class="group-controls">
+        <div class="section">
+          <h2 id="groupTitle"></h2>
+          <div class="flex-row">
             <select id="groupSelect"></select>
-            <button class="btn" id="addGroupBtn">添加组</button>
-            <button class="btn" id="renameGroupBtn">重命名</button>
-            <button class="btn danger" id="deleteGroupBtn">删除</button>
+            <button class="btn" id="addGroupBtn"></button>
+            <button class="btn" id="renameGroupBtn"></button>
+            <button class="btn danger" id="deleteGroupBtn"></button>
           </div>
         </div>
-        <div class="member-section">
-          <h2>名单管理</h2>
-          <div class="member-input-row">
-            <input type="text" id="memberInput" placeholder="输入姓名…" />
-            <button class="btn" id="addMemberBtn">添加</button>
+        <div class="section">
+          <h2 id="memberTitle"></h2>
+          <div class="flex-row">
+            <input type="text" id="memberInput" />
+            <button class="btn" id="addMemberBtn"></button>
+            <button class="btn" id="importBtn"></button>
+            <button class="btn" id="exportBtn"></button>
+            <input type="file" id="importFile" accept=".txt" />
           </div>
           <div class="member-list" id="memberList"></div>
         </div>
       </div>
       <div class="right-panel">
-        <div class="display-area" id="displayArea">等待开始</div>
+        <div class="display-area" id="displayArea"></div>
         <div class="control-options">
           <input type="checkbox" id="autoRollChk">
-          <label for="autoRollChk">自动点名</label>
+          <label for="autoRollChk" id="autoLabel"></label>
         </div>
         <div class="control-buttons">
-          <button class="start-btn" id="startBtn">开始</button>
-          <button class="stop-btn" id="stopBtn" disabled>停止</button>
+          <button class="btn" id="startBtn"></button>
+          <button class="btn" id="stopBtn" disabled></button>
         </div>
       </div>
     </div>
@@ -113,159 +106,114 @@
   <div class="overlay" id="overlay">
     <div class="overlay-content">
       <h3 id="finalName">---</h3>
-      <button id="closeOverlayBtn">好的</button>
+      <button class="btn" id="closeOverlayBtn"></button>
     </div>
   </div>
   <script>
-    // 数据存储
-    const STORAGE_KEY = 'BW_BetterUI_Groups';
-    function loadGroups() {
-      try {
-        const dataStr = localStorage.getItem(STORAGE_KEY);
-        if (dataStr) return JSON.parse(dataStr);
-      } catch(e) { console.warn('加载出错:', e); }
-      return [];
+const STORE='BW_BetterUI_Groups',LANG='RANDOM_ROLL_LANG';
+let groups,cur=0,rolling=false,rollTm=null,autoTm=null,lastDisp='';
+const i18n={cn:{
+  langToggle:'English','headerTitle':'随机点名','groupTitle':'分组管理','addGroupBtn':'添加组','renameGroupBtn':'重命名','deleteGroupBtn':'删除',
+  'memberTitle':'名单管理','memberInput':'输入姓名…','addMemberBtn':'添加','importBtn':'导入','exportBtn':'导出','displayArea':'等待开始',
+  'autoLabel':'自动点名','startBtn':'开始','stopBtn':'停止','closeOverlayBtn':'好的','defaultGroup':'默认分组',
+  'importedGroup':'已导入分组「{group}」','confirmDelete':'删除分组「{group}」吗？','noMembersAlert':'当前分组没有成员可导出！',
+  'groupNamePrompt':'请输入分组名称:','newGroupNamePrompt':'新的分组名称:'
+},
+en:{
+  langToggle:'中文','headerTitle':'Random Name Picker','groupTitle':'Group Management','addGroupBtn':'Add Group','renameGroupBtn':'Rename','deleteGroupBtn':'Delete',
+  'memberTitle':'Members','memberInput':'Type a name…','addMemberBtn':'Add','importBtn':'Import','exportBtn':'Export','displayArea':'Waiting',
+  'autoLabel':'Auto Roll','startBtn':'Start','stopBtn':'Stop','closeOverlayBtn':'OK','defaultGroup':'Default Group',
+  'importedGroup':'Imported group “{group}”','confirmDelete':'Delete group “{group}”?','noMembersAlert':'No members to export in current group!',
+  'groupNamePrompt':'Group name:','newGroupNamePrompt':'New group name:'
+}};
+let lang=localStorage.getItem(LANG)||'cn';
+const $=id=>document.getElementById(id),
+      gSel=$('groupSelect'),gAdd=$('addGroupBtn'),gRen=$('renameGroupBtn'),gDel=$('deleteGroupBtn'),
+      mInp=$('memberInput'),mAdd=$('addMemberBtn'),imBtn=$('importBtn'),exBtn=$('exportBtn'),imFile=$('importFile'),
+      mList=$('memberList'),disp=$('displayArea'),sBtn=$('startBtn'),tBtn=$('stopBtn'),autoCk=$('autoRollChk'),
+      ov=$('overlay'),fNm=$('finalName'),cOv=$('closeOverlayBtn'),hd=$('headerTitle'),gt=$('groupTitle'),mt=$('memberTitle'),
+      autoLb=$('autoLabel'),lTog=$('langToggle');
+function loadData(){try{return JSON.parse(localStorage.getItem(STORE))||[{name:i18n[lang].defaultGroup,members:[]}]}
+catch{return[{name:i18n[lang].defaultGroup,members:[]}]}};
+function saveData(g){localStorage.setItem(STORE,JSON.stringify(g))}
+function getG(){return groups[cur]}
+function applyLang(l){lTog.textContent=i18n[l].langToggle;hd.textContent=i18n[l].headerTitle;gt.textContent=i18n[l].groupTitle;
+gAdd.textContent=i18n[l].addGroupBtn;gRen.textContent=i18n[l].renameGroupBtn;gDel.textContent=i18n[l].deleteGroupBtn;
+mt.textContent=i18n[l].memberTitle;mInp.placeholder=i18n[l].memberInput;mAdd.textContent=i18n[l].addMemberBtn;
+imBtn.textContent=i18n[l].importBtn;exBtn.textContent=i18n[l].exportBtn;disp.textContent=i18n[l].displayArea;
+autoLb.textContent=i18n[l].autoLabel;sBtn.textContent=i18n[l].startBtn;tBtn.textContent=i18n[l].stopBtn;cOv.textContent=i18n[l].closeOverlayBtn}
+function renderG(){
+  gSel.innerHTML='';groups.forEach((g,i)=>{let o=document.createElement('option');o.value=i;o.textContent=g.name;gSel.appendChild(o)});
+  if(cur>=groups.length)cur=0;gSel.value=cur;renderM();updBtn()}
+function renderM(){
+  mList.innerHTML='';
+  if(!groups.length)return;
+  getG().members.forEach((nm,i)=>{
+    let d=document.createElement('div');d.className='member-item';d.innerHTML=`<span>${nm}</span>`;
+    let b=document.createElement('button');b.textContent=(lang==='cn'?'删除':'Delete');b.onclick=()=>{getG().members.splice(i,1);saveData(groups);renderM();updBtn();}
+    d.appendChild(b);mList.appendChild(d);
+  });
+}
+function updBtn(){
+  let has=!!getG()?.members.length;sBtn.disabled=!has||rolling;tBtn.disabled=!rolling;
+  if(rolling){sBtn.style.background='var(--secondary-color)';tBtn.style.background='var(--danger-color)'}
+  else{sBtn.style.background='var(--primary-color)';tBtn.style.background='var(--secondary-color)'}
+}
+function startRoll(){
+  if(rolling)return;let g=getG();if(!g?.members.length)return;rolling=true;updBtn();
+  if(autoCk.checked){tBtn.style.display='none';autoTm=setTimeout(stopRoll,(2+Math.random()*2)*1e3)}else{tBtn.style.display='inline-block'}
+  ;(function roll(){
+    if(!rolling)return;let idx=Math.floor(Math.random()*g.members.length);lastDisp=g.members[idx];
+    disp.innerHTML=`<span class="fade-text">${lastDisp}</span>`;
+    rollTm=setTimeout(roll,100+Math.random()*150);
+  })();
+}
+function stopRoll(){
+  if(!rolling)return;rolling=false;updBtn();clearTimeout(rollTm);rollTm=null;clearTimeout(autoTm);autoTm=null;
+  disp.classList.add('final-animate');setTimeout(()=>disp.classList.remove('final-animate'),300);
+  fNm.textContent=lastDisp||'---';ov.classList.add('show');
+}
+function init(){
+  groups=loadData();if(!groups.length){groups.push({name:i18n[lang].defaultGroup,members:[]});saveData(groups)}
+  applyLang(lang);localStorage.setItem(LANG,lang);
+  lTog.onclick=()=>{lang=(lang==='cn'?'en':'cn');localStorage.setItem(LANG,lang);applyLang(lang);renderG();};
+  renderG();disp.textContent=i18n[lang].displayArea;
+  gSel.onchange=()=>{cur=+gSel.value;renderM();updBtn();disp.textContent=i18n[lang].displayArea};
+  gAdd.onclick=()=>{
+    let nm=prompt(i18n[lang].groupNamePrompt);if(!nm?.trim())return;groups.push({name:nm.trim(),members:[]});
+    cur=groups.length-1;saveData(groups);renderG();
+  };
+  gRen.onclick=()=>{
+    let g=getG();if(!g)return;let nm=prompt(i18n[lang].newGroupNamePrompt,g.name);if(!nm?.trim())return;g.name=nm.trim();saveData(groups);renderG();
+  };
+  gDel.onclick=()=>{
+    let g=getG();if(!g)return;if(confirm(i18n[lang].confirmDelete.replace('{group}',g.name))){
+      groups.splice(cur,1);if(!groups.length)groups.push({name:i18n[lang].defaultGroup,members:[]});cur=0;saveData(groups);renderG();
     }
-    function saveGroups(groups) { localStorage.setItem(STORAGE_KEY, JSON.stringify(groups)); }
-    let groups = loadGroups();
-    if (groups.length === 0) { groups.push({ name: '默认分组', members: [] }); saveGroups(groups); }
-    let currentGroupIndex = 0, rolling = false, rollTimer = null, autoStopTimer = null, lastDisplayed = '等待开始';
-    // DOM 元素
-    const groupSelect = document.getElementById('groupSelect');
-    const addGroupBtn = document.getElementById('addGroupBtn');
-    const renameGroupBtn = document.getElementById('renameGroupBtn');
-    const deleteGroupBtn = document.getElementById('deleteGroupBtn');
-    const memberInput = document.getElementById('memberInput');
-    const addMemberBtn = document.getElementById('addMemberBtn');
-    const memberListEl = document.getElementById('memberList');
-    const displayArea = document.getElementById('displayArea');
-    const startBtn = document.getElementById('startBtn');
-    const stopBtn = document.getElementById('stopBtn');
-    const autoRollChk = document.getElementById('autoRollChk');
-    const overlay = document.getElementById('overlay');
-    const finalNameEl = document.getElementById('finalName');
-    const closeOverlayBtn = document.getElementById('closeOverlayBtn');
-    // 分组管理
-    function renderGroups() {
-      groupSelect.innerHTML = '';
-      groups.forEach((g, i) => {
-        const opt = document.createElement('option');
-        opt.value = i; opt.textContent = g.name;
-        groupSelect.appendChild(opt);
-      });
-      if (currentGroupIndex >= groups.length) currentGroupIndex = 0;
-      groupSelect.value = currentGroupIndex;
-      renderMembers(); updateControlButtons();
-    }
-    renderGroups();
-    groupSelect.addEventListener('change', () => {
-      currentGroupIndex = parseInt(groupSelect.value, 10);
-      renderMembers(); updateControlButtons();
-      displayArea.textContent = '等待开始';
-    });
-    addGroupBtn.addEventListener('click', () => {
-      const name = prompt('请输入分组名称:');
-      if (!name || !name.trim()) return;
-      groups.push({ name: name.trim(), members: [] });
-      currentGroupIndex = groups.length - 1;
-      saveGroups(groups);
-      renderGroups();
-    });
-    renameGroupBtn.addEventListener('click', () => {
-      if (!groups.length) return;
-      const g = groups[currentGroupIndex];
-      const newName = prompt('请输入新的分组名称:', g.name);
-      if (!newName || !newName.trim()) return;
-      g.name = newName.trim();
-      saveGroups(groups);
-      renderGroups();
-    });
-    deleteGroupBtn.addEventListener('click', () => {
-      if (!groups.length) return;
-      const g = groups[currentGroupIndex];
-      if (!confirm(`确定删除分组「${g.name}」吗？该操作不可恢复！`)) return;
-      groups.splice(currentGroupIndex, 1);
-      if (!groups.length) groups.push({ name: '默认分组', members: [] });
-      currentGroupIndex = 0;
-      saveGroups(groups);
-      renderGroups();
-    });
-    // 成员管理
-    function getCurrentGroup() { return groups[currentGroupIndex]; }
-    function renderMembers() {
-      memberListEl.innerHTML = '';
-      if (!groups.length) return;
-      const group = getCurrentGroup();
-      group.members.forEach((m, i) => {
-        const div = document.createElement('div');
-        div.className = 'member-item';
-        div.innerHTML = `<span>${m}</span>`;
-        const delBtn = document.createElement('button');
-        delBtn.textContent = '删除';
-        delBtn.onclick = () => { group.members.splice(i, 1); saveGroups(groups); renderMembers(); updateControlButtons(); };
-        div.appendChild(delBtn);
-        memberListEl.appendChild(div);
-      });
-    }
-    addMemberBtn.addEventListener('click', () => {
-      if (!groups.length) return;
-      const val = memberInput.value.trim();
-      if (!val) return;
-      getCurrentGroup().members.push(val);
-      saveGroups(groups);
-      memberInput.value = '';
-      renderMembers(); updateControlButtons();
-    });
-    memberInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); addMemberBtn.click(); } });
-    // 点名逻辑
-    function startRoll() {
-      if (rolling) return;
-      const group = getCurrentGroup();
-      if (!group || !group.members.length) return;
-      rolling = true;
-      startBtn.disabled = true; stopBtn.disabled = false;
-      const autoMode = autoRollChk.checked;
-      if (autoMode) { stopBtn.style.display = 'none'; autoStopTimer = setTimeout(stopRoll, (2 + Math.random() * 2) * 1000); }
-      else { stopBtn.style.display = 'inline-block'; }
-      function updateRoll() {
-        if (!rolling) return;
-        const idx = Math.floor(Math.random() * group.members.length);
-        lastDisplayed = group.members[idx];
-        displayArea.innerHTML = `<span class="fade-text">${lastDisplayed}</span>`;
-        rollTimer = setTimeout(updateRoll, 100 + Math.random() * 150);
-      }
-      rollTimer = setTimeout(updateRoll, 0);
-    }
-    function stopRoll() {
-      if (!rolling) return;
-      rolling = false;
-      startBtn.disabled = false; stopBtn.disabled = true;
-      if (rollTimer) { clearTimeout(rollTimer); rollTimer = null; }
-      if (autoStopTimer) { clearTimeout(autoStopTimer); autoStopTimer = null; }
-      displayArea.classList.add('final-animate');
-      setTimeout(() => { displayArea.classList.remove('final-animate'); }, 300);
-      finalNameEl.textContent = lastDisplayed || '---';
-      overlay.classList.add('show');
-    }
-    startBtn.addEventListener('click', startRoll);
-    stopBtn.addEventListener('click', stopRoll);
-    // 按钮状态
-    function updateControlButtons() {
-      const group = getCurrentGroup();
-      const hasMember = (group && group.members && group.members.length > 0);
-      startBtn.disabled = !hasMember || rolling;
-      stopBtn.disabled = !rolling;
-    }
-    updateControlButtons();
-    // 关闭弹层
-    closeOverlayBtn.addEventListener('click', () => { overlay.classList.remove('show'); });
-    // 键盘快捷
-    document.addEventListener('keydown', function(e) {
-      if (document.activeElement.tagName !== 'INPUT' && e.code === 'Space') {
-        e.preventDefault();
-        if (!rolling) startRoll();
-      }
-    });
+  };
+  mAdd.onclick=()=>{let v=mInp.value.trim();if(!v)return;getG().members.push(v);saveData(groups);mInp.value='';renderM();updBtn();};
+  mInp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();mAdd.click();}};
+  imBtn.onclick=()=>imFile.click();
+  imFile.onchange=()=>{
+    if(!imFile.files?.length)return;let f=imFile.files[0],gn=f.name.replace(/\.txt$/i,'');
+    let r=new FileReader();r.onload=ev=>{
+      let lines=(ev.target.result||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+      groups.push({name:gn,members:lines});saveData(groups);cur=groups.length-1;renderG();
+      alert(i18n[lang].importedGroup.replace('{group}',gn));imFile.value='';
+    };
+    r.readAsText(f,'utf-8');
+  };
+  exBtn.onclick=()=>{
+    let g=getG();if(!g?.members.length)return alert(i18n[lang].noMembersAlert);
+    let b=new Blob([g.members.join('\n')],{type:'text/plain;charset=utf-8'}),
+        u=URL.createObjectURL(b),a=document.createElement('a');
+    a.href=u;a.download=(g.name||'名单')+'.txt';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);
+  };
+  sBtn.onclick=startRoll;tBtn.onclick=stopRoll;
+  document.onkeydown=e=>{if(document.activeElement.tagName!=='INPUT'&&e.code==='Space'){e.preventDefault();if(!rolling)startRoll()}};
+  cOv.onclick=()=>ov.classList.remove('show');
+}
+init();
   </script>
 </body>
 </html>
